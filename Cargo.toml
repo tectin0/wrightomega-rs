@@ -30,5 +30,3 @@ f64 = []
 [[bench]]
 name = "bench"
 harness = false
-
-[exclude]

@@ -1,14 +1,22 @@
 [package]
-name = "wrightomega"
+name = "wright_omega"
 version = "0.1.0"
+authors = ["Noah Nachtigall <noah.nachtigall@gmail.com>"]
 edition = "2021"
+description = "A Rust implementation of the Wright Omega function"
+license = "MIT"
+keywords = ["math", "special-functions", "wright-omega"]
+categories = ["math", "science"]
+exclude = ["/benches/bench_python.py"]
 
 [lib]
-name = "wrightomega"
+name = "wright_omega"
 
 [dependencies]
 num-complex = "0.4.4"
 num-traits = "0.2.16"
+
+[dev-dependencies]
 fastapprox = "0.3.1"
 criterion = "0.5.1"
 rand = "0.8.5"
@@ -21,3 +29,5 @@ f64 = []
 [[bench]]
 name = "bench"
 harness = false
+
+[exclude]

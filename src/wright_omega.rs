@@ -1,31 +1,45 @@
-use num_complex::{Complex, ComplexFloat};
+pub use num_complex::Complex;
+use num_complex::ComplexFloat;
 use num_traits::{FloatConst, One, Zero};
 
 use crate::T;
 
-type C = Complex<T>;
-
 /// Value of the Wright omega function.
-type Output = C;
+type Omega = Complex<T>;
 
 /// Last update step in the iterative scheme.
-type LastUpdateStep = C;
+type LastUpdateStep = Complex<T>;
 
 /// Penultimate residual r_k = z - w_k - log(w_k)
-type PenultimateResidual = C;
+type PenultimateResidual = Complex<T>;
 
 /// Condition number estimate.
 type ConditionNumberEstimate = Option<T>;
 
-/// `wrightomega_ext` is the extended routine for evaluating the wright
-/// omega function.
+/// `wright_omega_ext` is the extended routine for evaluating the `wright
+/// omega` function.
 ///
+/// # Examples
+/// ```
+/// # use wright_omega::wright_omega_ext;
+/// # use num_complex::Complex;
 ///
+/// let z = Complex::new(0.0, 0.0);
+/// let (w, e, r, cond) = wright_omega_ext(z).unwrap();
+///
+/// assert_eq!(w.re, 0.5671433);
+/// assert_eq!(w.im, 0.0);
+/// assert_eq!(e.re, -4.9252303e-5);
+/// assert_eq!(e.im, 0.0);
+/// assert_eq!(r.re, -7.7188015e-5);
+/// assert_eq!(r.im, 0.0);
+/// assert_eq!(cond.unwrap(), 0.0);
+/// ```
 #[inline]
-fn wrightomega_ext(
-    z: C,
+pub fn wright_omega_ext(
+    z: Complex<T>,
 ) -> Option<(
-    Output,
+    Omega,
     LastUpdateStep,
     PenultimateResidual,
     ConditionNumberEstimate,
@@ -33,13 +47,13 @@ fn wrightomega_ext(
     let mut z = z;
 
     let mut s = 1.0;
-    let x = z.re();
-    let y = z.im();
-    let mut w = C::zero();
+    let x = z.re;
+    let y = z.im;
+    let mut w = Complex::<T>::zero();
 
     let pi: T = T::PI();
     let epsilon: T = T::EPSILON;
-    let i = C::i();
+    let i = Complex::<T>::i();
 
     let ympi = y - pi;
     let yppi = y + pi;
@@ -54,17 +68,22 @@ fn wrightomega_ext(
         w.re = if y.abs() <= pi / 2.0 { 0.0 } else { -0.0 };
         w.im = if y >= 0.0 { 0.0 } else { -0.0 };
 
-        return Some((w, C::zero(), C::zero(), None));
+        return Some((w, Complex::<T>::zero(), Complex::<T>::zero(), None));
     }
     // Asymptotic for large z
     else if x.is_infinite() || y.is_infinite() {
-        w = C::new(x, y);
-        return Some((w, C::zero(), C::zero(), None));
+        w = Complex::<T>::new(x, y);
+        return Some((w, Complex::<T>::zero(), Complex::<T>::zero(), None));
     }
 
     // Test If exactly on the singular points
     if x == -1.0 && y.abs() == pi {
-        return Some((-C::one(), C::zero(), C::zero(), None));
+        return Some((
+            -Complex::<T>::one(),
+            Complex::<T>::zero(),
+            Complex::<T>::zero(),
+            None,
+        ));
     }
 
     // Region 1: upper branch point
@@ -109,7 +128,7 @@ fn wrightomega_ext(
     // Region 5: Top wing
     // Negative log series
     else if x <= -1.05 && pi < y && y - pi <= -0.75 * (x + 1.0) {
-        let t = z - C::i() * pi;
+        let t = z - Complex::<T>::i() * pi;
         let pz = (-t).ln();
 
         w = ((1.0 + (-3.0 / 2.0 + 1.0 / 3.0 * pz) * pz) * pz
@@ -119,7 +138,7 @@ fn wrightomega_ext(
     // Region 6: Bottom wing
     // Negative log series
     else if x <= -1.05 && 0.75 * (x + 1.0) < y + pi && y + pi <= 0.0 {
-        let t = z + C::i() * pi;
+        let t = z + Complex::<T>::i() * pi;
         let pz = -t.ln();
         w = ((1.0 + (-3.0 / 2.0 + 1.0 / 3.0 * pz) * pz) * pz
             + ((-1.0 + 1.0 / 2.0 * pz) * pz + (pz + (-pz + t) * t) * t) * t)
@@ -146,7 +165,7 @@ fn wrightomega_ext(
                 ympi = (y - pi).floor(); // Rounding downward
             }
 
-            z = C::new(x, ympi);
+            z = Complex::<T>::new(x, ympi);
         } else {
             let mut yppi = y + pi;
 
@@ -154,7 +173,7 @@ fn wrightomega_ext(
                 yppi = (y + pi).ceil(); // Rounding upward
             }
 
-            z = C::new(x, yppi);
+            z = Complex::<T>::new(x, yppi);
         }
     }
 
@@ -188,21 +207,24 @@ fn wrightomega_ext(
     Some((w, e, r, Some(cond)))
 }
 
-/// wrightomega is the routine for evaluating the wright omega function.
-/// It is a wrapper around the extended routine `wrightomega_ext`.
+/// `wright_omega` is the routine for evaluating the wright omega function.
+/// It is a wrapper around the extended routine `wright_omega_ext`.
 ///
 /// # Examples
 /// ```
-/// use wrightomega::wrightomega;
+/// # use wright_omega::wright_omega;
+/// # use num_complex::Complex;
 ///
-/// let w = wrightomega(0.0.into()).unwrap();
+/// let z = Complex::new(0.0, 0.0);
+///
+/// let w = wright_omega(z).unwrap();
 ///
 /// assert_eq!(w.re, 0.5671433);
 /// assert_eq!(w.im, 0.0);
 /// ```
 #[inline]
-pub fn wrightomega(z: C) -> Option<Output> {
-    match wrightomega_ext(z) {
+pub fn wright_omega(z: Complex<T>) -> Option<Omega> {
+    match wright_omega_ext(z) {
         Some((w, _, _, _)) => Some(w),
         None => None,
     }

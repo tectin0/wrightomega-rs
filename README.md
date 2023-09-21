@@ -10,7 +10,7 @@ The library is available on [crates.io](https://crates.io/crates/wright_omega) a
 
 ```toml
 [dependencies]
-wright_omega = "0.1.0"
+wright_omega = "0.1.1"
 ```
 
 ## Example

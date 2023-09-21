@@ -86,9 +86,9 @@ pub fn wright_omega_ext(
         ));
     }
 
-    // Region 1: upper branch point
-    // Series about z=-1+Pi*I
     if -2.0 < x && x <= 1.0 && 1.0 < y && y < 2.0 * pi {
+        // Region 1: upper branch point
+        // Series about z=-1+Pi*I
         let pz = (2.0 * (z + (-1.0) - i * pi).conj()).sqrt().conj();
 
         w = -1.0
@@ -96,57 +96,51 @@ pub fn wright_omega_ext(
                 + (-1.0 / 36.0 * i + (1.0 / 270.0 + 1.0 / 4320.0 * i * pz) * pz) * pz)
                 * pz)
                 * pz;
-    }
-    // Region 2: lower branch point
-    // Series about z=-1-Pi*I
-    else if -2.0 < x && x <= 1.0 && -2.0 * pi < y && y < -1.0 {
+    } else if -2.0 < x && x <= 1.0 && -2.0 * pi < y && y < -1.0 {
+        // Region 2: lower branch point
+        // Series about z=-1-Pi*I
         let pz = (2.0 * (z + 1.0 + i * pi).conj()).sqrt().conj();
         w = -1.0
             + (-i
                 + (1.0 / 3.0 + (1.0 / 36.0 * i + (1.0 / 270.0 - 1.0 / 4320.0 * i * pz) * pz) * pz)
                     * pz)
                 * pz;
-    }
-    // Region 3: between branch cuts
-    // Series: About -infinity
-    else if x <= -2.0 && -pi < y && y <= pi {
+    } else if x <= -2.0 && -pi < y && y <= pi {
+        // Region 3: between branch cuts
+        // Series: About -infinity
         let pz = z.exp();
         w = (1.0 + (-1.0 + (3.0 / 2.0 + (-8.0 / 3.0 + 125.0 / 24.0 * pz) * pz) * pz) * pz) * pz;
-    }
-    // Region 4: Mushroom
-    // Series about z=1
-    else if (-2.0 < x && x <= 1.0 && (-1.0..=1.0).contains(&y))
+    } else if (-2.0 < x && x <= 1.0 && (-1.0..=1.0).contains(&y))
         || (-2.0 < x && (x - 1.0) * (x - 1.0) + y * y <= pi * pi)
     {
+        // Region 4: Mushroom
+        // Series about z=1
         let pz = z - 1.0;
         w = 1.0 / 2.0
             + 1.0 / 2.0 * z
             + (1.0 / 16.0 + (-1.0 / 192.0 + (-1.0 / 3072.0 + 13.0 / 61440.0 * pz) * pz) * pz)
                 * pz
                 * pz;
-    }
-    // Region 5: Top wing
-    // Negative log series
-    else if x <= -1.05 && pi < y && y - pi <= -0.75 * (x + 1.0) {
+    } else if x <= -1.05 && pi < y && y - pi <= -0.75 * (x + 1.0) {
+        // Region 5: Top wing
+        // Negative log series
         let t = z - Complex::<T>::i() * pi;
         let pz = (-t).ln();
 
         w = ((1.0 + (-3.0 / 2.0 + 1.0 / 3.0 * pz) * pz) * pz
             + ((-1.0 + 1.0 / 2.0 * pz) * pz + (pz + (-pz + t) * t) * t) * t)
             / (t * t * t);
-    }
-    // Region 6: Bottom wing
-    // Negative log series
-    else if x <= -1.05 && 0.75 * (x + 1.0) < y + pi && y + pi <= 0.0 {
+    } else if x <= -1.05 && 0.75 * (x + 1.0) < y + pi && y + pi <= 0.0 {
+        // Region 6: Bottom wing
+        // Negative log series
         let t = z + Complex::<T>::i() * pi;
         let pz = -t.ln();
         w = ((1.0 + (-3.0 / 2.0 + 1.0 / 3.0 * pz) * pz) * pz
             + ((-1.0 + 1.0 / 2.0 * pz) * pz + (pz + (-pz + t) * t) * t) * t)
             / (t * t * t);
-    }
-    // Region 7: Everywhere else
-    // Series solution about infinity
-    else {
+    } else {
+        // Region 7: Everywhere else
+        // Series solution about infinity
         let pz = z.ln();
         w = ((1.0 + (-3.0 / 2.0 + 1.0 / 3.0 * pz) * pz) * pz
             + ((-1.0 + 1.0 / 2.0 * pz) * pz + (pz + (-pz + z) * z) * z) * z)

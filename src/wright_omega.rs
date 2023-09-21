@@ -115,7 +115,7 @@ pub fn wright_omega_ext(
     }
     // Region 4: Mushroom
     // Series about z=1
-    else if (-2.0 < x && x <= 1.0 && -1.0 <= y && y <= 1.0)
+    else if (-2.0 < x && x <= 1.0 && (-1.0..=1.0).contains(&y))
         || (-2.0 < x && (x - 1.0) * (x - 1.0) + y * y <= pi * pi)
     {
         let pz = z - 1.0;
@@ -184,7 +184,7 @@ pub fn wright_omega_ext(
     let mut e = r / wp1 * (2.0 * wp1 * (wp1 + 2.0 / 3.0 * r) - r)
         / (2.0 * wp1 * (wp1 + 2.0 / 3.0 * r) - 2.0 * r);
 
-    w = w * (1.0 + e);
+    w *= 1.0 + e;
 
     // Iteration two
     if ((2.0 * w * w - 8.0 * w - 1.0) * r.abs().powi(4).abs()).abs()
@@ -194,7 +194,7 @@ pub fn wright_omega_ext(
         wp1 = s * w + 1.0;
         e = r / wp1 * (2.0 * wp1 * (wp1 + 2.0 / 3.0 * r) - r)
             / (2.0 * wp1 * (wp1 + 2.0 / 3.0 * r) - 2.0 * r);
-        w = w * (1.0 + e);
+        w *= 1.0 + e;
     }
 
     // Undo regularization
@@ -224,8 +224,5 @@ pub fn wright_omega_ext(
 /// ```
 #[inline]
 pub fn wright_omega(z: Complex<T>) -> Option<Omega> {
-    match wright_omega_ext(z) {
-        Some((w, _, _, _)) => Some(w),
-        None => None,
-    }
+    wright_omega_ext(z).map(|(w, _, _, _)| w)
 }

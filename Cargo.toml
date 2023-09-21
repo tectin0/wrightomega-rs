@@ -4,6 +4,7 @@ version = "0.1.0"
 authors = ["Noah Nachtigall <noah.nachtigall@gmail.com>"]
 edition = "2021"
 description = "A Rust implementation of the Wright Omega function"
+repository = "https://github.com/tectin0/wrightomega-rs"
 license = "MIT"
 keywords = ["math", "special-functions", "wright-omega"]
 categories = ["math", "science"]
